@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.2",
+    "connect-mongo": "^4.4.1",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "mongoose": "^5.12.6",
+    "nodemailer": "^6.6.1",
+    "nodemon": "^2.0.7",
+    "path": "^0.12.7"
+  },
+  "name": "back",
+  "description": "Back-End Development for my Diploma Project for the year of 2021",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "author": "Bilguun Soninbayar",
+  "license": "MIT"
+}
