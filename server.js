@@ -4,6 +4,10 @@ const app = express();
 const port = 3000;
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
+const nodemailer = require("nodemailer");
+
+//DOTENV
+require("dotenv").config();
 
 //DATABASE CONFIG
 const mongoose = require("mongoose");
@@ -95,9 +99,34 @@ app.get("/paypal/success", (req, res) => {
 
       let response = await client.execute(request);
       console.log(`Response: ${JSON.stringify(response)}`);
-      // res.json({ status: "Success" });
+
+      //EMAIL
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      });
+      const mailTarget = req.session.userDetails.email;
+
+      const mailOptions = {
+        from: process.env.MAIL_USERNAME,
+        to: mailTarget,
+        subject: "UB Pet Store: Delivery",
+        text: "Thank you for purchasing from UB Pet Store. Your order has been received and will be delivered as soon as possible!",
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+
       res.send(
-        "<h1 style='text-align: center, font-size: 30px'>Payment successful</h1>"
+        "<h1 style='text-align: 'center', font-size: '40px''>Payment successful</h1>"
       );
     };
     captureOrder(orderId);
@@ -105,9 +134,13 @@ app.get("/paypal/success", (req, res) => {
     console.log(err);
   }
 });
-
 app.get("/paypal/cancel", (req, res) => {
   res.send("Cancelled");
+});
+
+//MAILAGE
+app.get("/mail", (req, res) => {
+  res.send("DONE");
 });
 
 app.listen(port, () => {

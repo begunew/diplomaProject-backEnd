@@ -6,6 +6,7 @@ router.get("/", async (req, res) => {
   res.json(req.session.user);
 });
 
+//GET USER DATA
 router.post("/address", async (req, res) => {
   const { fullName, email, phone, address, details } = req.body;
   console.log(req.body); //testing input req\
@@ -16,6 +17,8 @@ router.post("/address", async (req, res) => {
     address,
     details,
   };
+  res.send(req.session.userDetails);
+  console.log("RESPONSE SENT");
 });
 
 // POST
