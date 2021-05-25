@@ -12,17 +12,15 @@ require("dotenv").config();
 
 //DATABASE CONFIG
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/diploma", {
+mongoose.connect(process.env.DB_NAME, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
 });
 
 // PAYPAL CONFIG
-let clientId =
-  "AUntlskGKhlHZK3SeZ_jn3qPsgMocLaiftYt9lVRWWDcFNs5Nd7-Dasfu_lyl8kyPBMybFZ7GMhA9kTo";
-let clientSecret =
-  "ELLCwZ6HINnDpim413cPQ-c6_0UaAle7A6CikTsSItjkM0gVzEA1XybEYzvEN1DifXp4x4mB17NWLLsC";
+let clientId = process.env.CLIENT_ID;
+let clientSecret = process.env.CLIENT_SECRET;
 let environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
 let client = new paypal.core.PayPalHttpClient(environment);
 
@@ -30,10 +28,10 @@ let client = new paypal.core.PayPalHttpClient(environment);
 app.use(express.json());
 app.use(
   session({
-    secret: "isa43",
+    secret: process.env.DB_SECRET,
     resave: true,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: "mongodb://localhost:27017/diploma" }),
+    store: MongoStore.create({ mongoUrl: process.env.DB_NAME }),
     cookie: { maxAge: 60000 * 60 }, //1hr
   })
 );
@@ -51,14 +49,6 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "Connection to Database: Error:"));
 db.once("open", function () {
   console.log("Database on duty!");
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-app.post("/data", (req, res) => {
-  res.send("Send back data here from the Database");
 });
 
 app.get("/paypal", (req, res) => {
@@ -146,11 +136,6 @@ app.get("/paypal/success", (req, res) => {
 });
 app.get("/paypal/cancel", (req, res) => {
   res.sendFile("/back/cancel.html", { root: path.dirname(__dirname) });
-});
-
-//MAILAGE
-app.get("/mail", (req, res) => {
-  res.send("DONE");
 });
 
 app.listen(port, () => {
