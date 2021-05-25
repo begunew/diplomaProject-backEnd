@@ -5,6 +5,7 @@ const port = 3000;
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const nodemailer = require("nodemailer");
+const path = require("path");
 
 //DOTENV
 require("dotenv").config();
@@ -62,18 +63,24 @@ app.post("/data", (req, res) => {
 
 app.get("/paypal", (req, res) => {
   try {
+    let total = req.session.total;
+    let userData = req.session.user;
+    console.log(userData);
+
     let request = new paypal.orders.OrdersCreateRequest();
     request.requestBody({
       intent: "CAPTURE",
       application_context: {
         return_url: "http://10.0.2.2:3000/paypal/success",
         cancel_url: "http://10.0.2.2:3000/paypal/cancel",
+        brand_name: "UB Pet Store",
       },
       purchase_units: [
         {
+          description: "Pet Food",
           amount: {
             currency_code: "USD",
-            value: "100.00",
+            value: total.total,
           },
         },
       ],
@@ -89,6 +96,9 @@ app.get("/paypal", (req, res) => {
     console.log(err);
   }
 });
+// app.get("/asdf", (req, res) => {
+//   res.sendFile("/back/index.html", { root: path.dirname(__dirname) });
+// });
 
 app.get("/paypal/success", (req, res) => {
   try {
@@ -119,14 +129,14 @@ app.get("/paypal/success", (req, res) => {
 
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          console.log(error);
+          console.log(`error: `, error);
         } else {
           console.log("Email sent: " + info.response);
         }
       });
 
-      res.send(
-        "<h1 style='text-align: 'center', font-size: '40px''>Payment successful</h1>"
+      res.sendFile(
+        res.sendFile("/back/success.html", { root: path.dirname(__dirname) })
       );
     };
     captureOrder(orderId);
@@ -135,7 +145,7 @@ app.get("/paypal/success", (req, res) => {
   }
 });
 app.get("/paypal/cancel", (req, res) => {
-  res.send("Cancelled");
+  res.sendFile("/back/cancel.html", { root: path.dirname(__dirname) });
 });
 
 //MAILAGE

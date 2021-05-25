@@ -21,6 +21,13 @@ router.post("/address", async (req, res) => {
   console.log("RESPONSE SENT");
 });
 
+router.post("/total", (req, res) => {
+  const total = req.body;
+  req.session.total = total;
+  console.log(req.session.total);
+
+  res.send(req.session.total);
+});
 // POST
 router.post("/addToCart", async (req, res) => {
   const { id, qty, price, image, cartItemName } = req.body;
